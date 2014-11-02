@@ -1,0 +1,3 @@
+name = Get entitie data
+description = This module provides methods for easily obtaining data entities
+core = 7.x
