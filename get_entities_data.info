@@ -1,3 +1,4 @@
-name = Get entitie data
+name = Get entities data
 description = This module provides methods for easily obtaining data entities
+package = Development
 core = 7.x
