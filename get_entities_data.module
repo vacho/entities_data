@@ -6,7 +6,7 @@
 
 
 /**
- * Implements hook_help().
+* Implements hook_help().
 *
 * Displays help and module information.
 *
@@ -21,4 +21,62 @@ function get_entities_data_help($path, $arg) {
       return '<p>' . t("This module provides methods for easily obtaining data entities") . '</p>';
       break;
   }
+}
+
+/**
+ * Implements get_datas().
+ *
+ * Return entites query.
+ *
+ * @param entity_type
+ *   node, or other 
+ * @param bundle
+ *   article or other
+ * @param fields
+ *   string of fields such as human name (lowercase)
+ * @param conditios
+ *   string of conditions such as sql condition
+ */
+function get_datas($entity_type, $bundle, $fields, $conditions){
+  $query = new EntityFieldQuery();
+  
+  $conditions = explode(",", $conditions);
+  
+  foreach ($conditions AS $condition){
+    if (strpos($condition, '=') !== false){
+      $elements = explode("=", $condition);
+      $operator =  "=";
+    }
+    
+    $fieldName =  $elements[0];
+    $fieldValue =  $elements[1];
+    
+    $fieldConditions .= "->fieldCondition('field_$fieldName', 'value', '$fieldValue', '$operator')";
+  }
+  
+  $composition = '$query->entityCondition'."('entity_type', '$entity_type')
+  ->entityCondition('bundle', '$bundle')
+  $fieldConditions
+  ->execute();
+  ";
+  
+  eval("\$entitiesInstances=$composition;");
+  
+  if(sizeof($entitiesInstances) > 0){
+    $entities = entity_load($entity_type, array_keys($entitiesInstances[$entity_type]));
+    
+    $fields = explode(" ", $fields);
+    foreach ($entities as $entity) {
+      $fieldData = array();
+      foreach ($fields AS $field){
+        eval("\$fieldData['$field']=".'$entity->field_'.$field."[LANGUAGE_NONE][0][value];");
+      }
+      $datas[] = $fieldData;
+    }
+  
+  }else {
+    $datas = null;
+  }
+    
+  return $datas;
 }
