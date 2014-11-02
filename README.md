@@ -16,8 +16,9 @@ Include this code in yout module
 ```
 
 ### To do
-Port to OO programing
-Test and develop for not node entities
-1-n relations
-n-1 relations
-1-1 relations
+* Port to OO programing.
+* Test and develop for not node entities.
+* 1-n relations.
+* n-1 relations.
+* 1-1 relations.
+
