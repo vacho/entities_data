@@ -19,13 +19,13 @@ class EntitiesData {
    * @param conditios
    *   string of conditions such as sql condition, separated by comma (,)
    */
-  public static function getDatas($entity_type, $bundle, $fields, $conditions){
+  public static function getDatas($entity_type, $bundle, $fields, $conditions) {
     $query = new EntityFieldQuery();
     
     $conditions = explode(",", $conditions);
     
-    foreach ($conditions AS $condition){
-      if (strpos($condition, '=') !== false){
+    foreach ($conditions AS $condition) {
+      if (strpos($condition, '=') !== FALSE) {
         $elements = explode("=", $condition);
         $operator =  "=";
       }
@@ -36,7 +36,7 @@ class EntitiesData {
       $fieldConditions .= "->fieldCondition('field_$fieldName', 'value', '$fieldValue', '$operator')";
     }
     
-    $composition = '$query->entityCondition'."('entity_type', '$entity_type')
+    $composition = '$query->entityCondition' . "('entity_type', '$entity_type')
     ->entityCondition('bundle', '$bundle')
     $fieldConditions
     ->execute();
@@ -44,20 +44,21 @@ class EntitiesData {
     
     eval("\$entitiesInstances=$composition;");
     
-    if(sizeof($entitiesInstances) > 0){
+    if (sizeof($entitiesInstances) > 0) {
       $entities = entity_load($entity_type, array_keys($entitiesInstances[$entity_type]));
       
       $fields = explode(" ", $fields);
       foreach ($entities as $entity) {
         $fieldData = array();
-        foreach ($fields AS $field){
-          eval("\$fieldData['$field']=".'$entity->field_'.$field."[LANGUAGE_NONE][0][value];");
+        foreach ($fields AS $field) {
+          eval("\$fieldData['$field']=" . '$entity->field_' . $field . "[LANGUAGE_NONE][0][value];");
         }
         $datas[] = $fieldData;
       }
     
-    }else {
-      $datas = null;
+    }
+    else {
+      $datas = NULL;
     }
       
     return $datas;
