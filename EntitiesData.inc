@@ -6,7 +6,7 @@
 
 class EntitiesData {
   
-   /**
+  /**
    * Implements get_datas().
    * Return entites query.
    *
@@ -18,7 +18,7 @@ class EntitiesData {
    *   string of fields such as human name (lowercase) separated by single space ( )
    * @param conditios
    *   string of conditions such as sql condition, separated by comma (,)
-   */
+  */
   public static function getDatas($entity_type, $bundle, $fields, $conditions) {
     $query = new EntityFieldQuery();
     
