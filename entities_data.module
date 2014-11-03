@@ -15,10 +15,10 @@
 * @param arg
 *   Array that holds the current path as returned from arg() function
 */
-function get_entities_data_help($path, $arg) {
+function entities_data_help($path, $arg) {
   switch ($path) {
-    case "admin/help#get_entities_data":
-      return '<p>' . t("This module provides methods for easily obtaining data entities") . '</p>';
+    case "admin/help#entities_data":
+      return '<p>' . t("This module provides methods for easily get and set datas in entities") . '</p>';
       break;
   }
 }
