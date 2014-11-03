@@ -7,7 +7,7 @@ The purpose of this project is to provide to  drupal programmers an easy way to 
 Single drupal node entity query
 
 ### Usage
-Include this code in yout module
+Include this code in your module
 ```bash
   module_load_include('module', 'get_entities_data', 'get_entities_data.module');
   //this is a example for call
