@@ -11,7 +11,8 @@ Include this code in your module
 ```bash
   //examplecode
   $ci = "12345";
-  $partner = get_datas('node', 'persona', "nombres apellido_paterno", "ci=$ci");
+  $partner = EntitiesData::getDatas('node', 'persona', "nombres apellido_paterno", "ci=$ci");
+  //this return a array of arrays
 ```
 
 ### To do

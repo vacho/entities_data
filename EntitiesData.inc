@@ -19,7 +19,7 @@ class EntitiesData {
    * @param conditios
    *   string of conditions such as sql condition, separated by comma (,)
    */
-  public static function get_datas($entity_type, $bundle, $fields, $conditions){
+  public static function getDatas($entity_type, $bundle, $fields, $conditions){
     $query = new EntityFieldQuery();
     
     $conditions = explode(",", $conditions);
