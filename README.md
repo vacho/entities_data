@@ -1,24 +1,27 @@
-Drupal 7 get_entities_data
+Drupal 7 entities_data
 =================
 
-The purpose of this project is to provide to  drupal programmers an easy way to access data located in drupal entities.
+The purpose of this project is to provide to  drupal programmers an easy way to access an save datas located in drupal entities.
 
 ### Done
-Single drupal node entity query
+* Queries to 1 Single node entity.
 
 ### Usage
 Include this code in your module
 ```bash
-  module_load_include('module', 'get_entities_data', 'get_entities_data.module');
-  //this is a example for call
+  //examplecode
   $ci = "12345";
-  $partner = get_datas('node', 'persona', "nombres apellido_paterno apellido_materno ci", "ci=$ci");
+  $partner = get_datas('node', 'persona', "nombres apellido_paterno", "ci=$ci");
 ```
 
 ### To do
-* Port to OO programing.
-* Test and develop for not node entities.
+Queries for get:
 * 1-n relations.
 * n-1 relations.
 * 1-1 relations.
-
+* n-n relations.
+Queries for set:
+* 1-n relations.
+* n-1 relations.
+* 1-1 relations.
+* n-n relations.
