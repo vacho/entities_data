@@ -5,8 +5,8 @@ The purpose of this project is to provide to  drupal programmers an easy way to 
 
 ### Done
 * Queries to 1 Single node entity.
-* Queries to 1-1 nodes entities
-* Queries to 1-n nodes entities
+* Queries to 1-1 nodes entities.
+* Queries to 1-n nodes entities.
 
 
 ### Usage
