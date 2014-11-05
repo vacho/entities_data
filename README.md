@@ -5,6 +5,9 @@ The purpose of this project is to provide to  drupal programmers an easy way to 
 
 ### Done
 * Queries to 1 Single node entity.
+* Queries to 1-1 nodes entities
+* Queries to 1-n nodes entities
+
 
 ### Usage
 Include this code in your module
@@ -17,12 +20,11 @@ Include this code in your module
 
 ### To do
 Queries for get:
-* 1-n relations.
 * n-1 relations.
-* 1-1 relations.
 * n-n relations.
 Queries for set:
+* 1 relations.
+* 1-1 relations.
 * 1-n relations.
 * n-1 relations.
-* 1-1 relations.
-* n-n relations.
+* n-m relations.

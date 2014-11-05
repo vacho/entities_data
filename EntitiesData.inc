@@ -50,8 +50,46 @@ class EntitiesData {
       $fields = explode(" ", $fields);
       foreach ($entities as $entity) {
         $fieldData = array();
+        
         foreach ($fields AS $field) {
+          $posIni = strpos($field, '('); 
+          if ( $posIni > 0 ) { //entitie
+            $posEnd = strpos($field, ')');
+            $subFields = substr($field, $posIni+1, $posEnd-$posIni-1);
+            $field = substr($field, 0, $posIni); 
+          }
+          
           eval("\$fieldData['$field']=" . '$entity->field_' . $field . "[LANGUAGE_NONE][0][value];");
+          
+          if ($fieldData["$field"] == NULL) {
+            eval("\$fieldData['$field']=" . '$entity->field_' . $field . "[und];");
+            
+            $areEntities = FALSE;
+            if ($fieldData["$field"] != NULL) { //entities
+              $areEntities = TRUE;
+              $subFields = explode(",", $subFields);
+              foreach ($fieldData["$field"] As $row) {
+                $id = $row['target_id'];
+                $type = $field;
+                $object[$id] = (object)array( 'nid' => $id, 'vid' => $id, 'type' => "$type");
+                $subEntity = entity_load($entity_type, array_keys($object));
+                $subEntity = $subEntity[$id];
+                
+                foreach ($subFields AS $subField) {
+                  eval("\$subFieldData['$subField']['$subEntity->title']=" . '$subEntity->field_' . $subField . "[LANGUAGE_NONE][0][value];");
+                }
+                
+                $object =  array();
+              }              
+
+            }
+            
+            if ($areEntities) {
+              $fieldData["$field"] = $subFieldData;
+            }
+            
+          }
+        
         }
         $datas[] = $fieldData;
       }
