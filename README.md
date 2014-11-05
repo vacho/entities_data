@@ -22,6 +22,7 @@ Include this code in your module
 Queries for get:
 * n-1 relations.
 * n-n relations.
+
 Queries for set:
 * 1 relations.
 * 1-1 relations.
