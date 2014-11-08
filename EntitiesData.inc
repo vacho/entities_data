@@ -111,6 +111,7 @@ class EntitiesData {
             
             if ($areEntities) {
               $fieldData["$field"] = $subFieldData;
+              $subFieldData = array();
             }
             
           }
