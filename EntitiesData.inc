@@ -22,18 +22,21 @@ class EntitiesData {
   public static function getDatas($entity_type, $bundle, $fields, $conditions) {
     $query = new EntityFieldQuery();
     
-    $conditions = explode(",", $conditions);
-    
-    foreach ($conditions AS $condition) {
-      if (strpos($condition, '=') !== FALSE) {
-        $elements = explode("=", $condition);
-        $operator =  "=";
+    if($conditions != ""){
+      
+      $conditions = explode(",", $conditions);
+      
+      foreach ($conditions AS $condition) {
+        if (strpos($condition, '=') !== FALSE) {
+          $elements = explode("=", $condition);
+          $operator =  "=";
+        }
+        
+        $fieldName =  $elements[0];
+        $fieldValue =  $elements[1];
+        
+        $fieldConditions .= "->fieldCondition('field_$fieldName', 'value', '$fieldValue', '$operator')";
       }
-      
-      $fieldName =  $elements[0];
-      $fieldValue =  $elements[1];
-      
-      $fieldConditions .= "->fieldCondition('field_$fieldName', 'value', '$fieldValue', '$operator')";
     }
     
     $composition = '$query->entityCondition' . "('entity_type', '$entity_type')
