@@ -27,15 +27,37 @@ class EntitiesData {
       $conditions = explode(",", $conditions);
       
       foreach ($conditions AS $condition) {
-        if (strpos($condition, '=') !== FALSE) {
+        $value = "value";
+        
+        if (strpos($condition, '!=') !== FALSE) {
+          $elements = explode("!=", $condition);
+          $operator =  "!=";
+        }else if (strpos($condition, '>=') !== FALSE) {
+          $elements = explode(">=", $condition);
+          $operator =  ">=";
+        }else if (strpos($condition, '<=') !== FALSE) {
+          $elements = explode("<=", $condition);
+          $operator =  "<=";
+        }else if (strpos($condition, '>') !== FALSE) {
+          $elements = explode(">", $condition);
+          $operator =  ">";
+        }else if (strpos($condition, '<') !== FALSE) {
+          $elements = explode("<", $condition);
+          $operator =  "<";
+        }else if (strpos($condition, '=') !== FALSE) {
           $elements = explode("=", $condition);
           $operator =  "=";
         }
-        
         $fieldName =  $elements[0];
-        $fieldValue =  $elements[1];
+        $fieldValue = $elements[1];
         
-        $fieldConditions .= "->fieldCondition('field_$fieldName', 'value', '$fieldValue', '$operator')";
+        if($elements[1] == 'NULL'){
+          $value = 'value';
+          $fieldConditions .= "->fieldCondition('field_$fieldName', '$value', '$fieldValue', '$operator')";
+        }else {
+          $fieldConditions .= "->fieldCondition('field_$fieldName', '$value', '$fieldValue', '$operator')";
+        }
+        
       }
     }
     
