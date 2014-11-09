@@ -76,6 +76,8 @@ class EntitiesData {
       foreach ($entities as $entity) {
         $fieldData = array();
         
+        $fieldData['nid'] = $entity->vid;
+        
         foreach ($fields AS $field) {
           $posIni = strpos($field, '('); 
           if ( $posIni > 0 ) { //entitie
