@@ -14,8 +14,10 @@ class EntitiesData {
    *   node, or other 
    * @param bundle
    *   article or other
-   * @param fields
-   *   string of fields such as human name (lowercase) separated by single space ( )
+   * param fields
+   *  string of fields such as human name (lowercase) separated by single space " "
+   *  eg (field_name_1 field_name_2 ... field_name_n)
+   *  eg (field_name_1 field_name_2 ... entityName(field_name_5 field_name_6 ...) ...field_name_n) 
    * @param conditios
    *   string of conditions such as sql condition, separated by comma (,)
   */
