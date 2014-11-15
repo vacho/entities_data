@@ -131,5 +131,26 @@ class EntitiesData {
       
     return $datas;
   }
-
+  
+  public static function setDatas($entity_type, $entity_id, $fields, $fields_values) {
+    if($entity_type == "node") {
+      $node = node_load($entity_id);
+      
+      $fields = explode(",", $fields);
+      $fieldValues = explode(",", $fields_values);
+      
+      for ($i = 0; $i < count($fields); $i++) {
+        
+        $pos = strpos($fieldValues[$i], '_');
+        
+        if ($pos > 0) { // is a field
+          $fieldValue = substr($fieldValues[$i], $pos+1, strlen($fieldValues[$i]));
+          eval("\$node->field_" . $fields[$i] ."['und'][0]['value'] = \$node->field_" . $fieldValue . "['und'][0]['value'];");          
+        }else {
+          eval("\$node->field_" . $fields[$i] ."['und'][0]['value'] = '" . $fieldValues[$i] . "';");
+        }        
+      }
+      node_save($node);      
+    }
+  }
 }
