@@ -7,18 +7,18 @@
 class EntitiesData {
   
   /**
-   * Implements get_datas().
-   * Return entites query.
+   * Implements getDatas().
+   * Return entities query.
    *
    * @param entity_type
    *   node, or other 
    * @param bundle
    *   article or other
    * param fields
-   *  string of fields such as human name (lowercase) separated by single space " "
+   *  string of fields such as system name (lowercase) separated by single space " "
    *  eg (field_name_1 field_name_2 ... field_name_n)
    *  eg (field_name_1 field_name_2 ... entityName(field_name_5 field_name_6 ...) ...field_name_n) 
-   * @param conditios
+   * @param conditions
    *   string of conditions such as sql condition, separated by comma (,)
   */
   public static function getDatas($entity_type, $bundle, $fields, $conditions) {
@@ -131,7 +131,21 @@ class EntitiesData {
       
     return $datas;
   }
-  
+
+  /**
+   * Implements setDatas().
+   * Set datas in a entities.
+   *
+   * @param entity_type
+   *   node, or other
+   * @param entity_id
+   *   id of entity
+   * param fields
+   *  string of fields such as system name (lowercase) separated by ","
+   * @param fields_values
+   *  string of conditions such as sql condition, separated by comma (,)
+   *  if a field value is a copy of other field value set "field_" prefix
+   */
   public static function setDatas($entity_type, $entity_id, $fields, $fields_values) {
     if($entity_type == "node") {
       $node = node_load($entity_id);
