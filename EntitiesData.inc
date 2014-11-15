@@ -92,7 +92,7 @@ class EntitiesData {
             eval("\$fieldData['$field']=" . '$entity->field_' . $field . "[und];");
             
             $areEntities = FALSE;
-            if ($fieldData["$field"] != NULL) { //entities
+            if ($fieldData["$field"] != NULL) { //Entities
               $areEntities = TRUE;
               $subFields = explode(",", $subFields);
               foreach ($fieldData["$field"] As $row) {
