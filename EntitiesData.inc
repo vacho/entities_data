@@ -164,7 +164,7 @@ class EntitiesData {
           eval("\$node->field_" . $fields[$i] ."['und'][0]['value'] = '" . $fieldValues[$i] . "';");
         }        
       }
-      node_save($node);      
+      node_save($node);
     }
   }
 }
