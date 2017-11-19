@@ -79,6 +79,7 @@ class EntitiesData {
         $fieldData = array();
         
         $fieldData['nid'] = $entity->vid;
+        $fieldData['title'] = $entity->title;
         
         foreach ($fields AS $field) {
           $posIni = strpos($field, '('); 
