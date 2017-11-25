@@ -77,17 +77,22 @@ class EntitiesData {
       $fields = explode(" ", $fields);
       foreach ($entities as $entity) {
         $fieldData = array();
-        
-        $fieldData['nid'] = $entity->vid;
+
+        $fieldData['nid'] = $entity->nid;
+        $fieldData['vid'] = $entity->vid;
         $fieldData['title'] = $entity->title;
+        $fieldData['created'] = $entity->created;
+        $fieldData['changed'] = $entity->changed;
         
         foreach ($fields AS $field) {
           $posIni = strpos($field, '(');
+
           if ( $posIni > 0 ) { //entity
             $posEnd = strpos($field, ')');
             $subFields = substr($field, $posIni+1, $posEnd-$posIni-1);
             $field = substr($field, 0, $posIni);
           }
+
           eval("\$fieldData['$field']=" . '$entity->' . $field . "[LANGUAGE_NONE][0][value];");
           
           if ($fieldData["$field"] == NULL) {
@@ -103,6 +108,12 @@ class EntitiesData {
                 $object[$id] = (object)array( 'nid' => $id, 'vid' => $id, 'type' => "$type");
                 $subEntity = entity_load($entity_type, array_keys($object));
                 $subEntity = $subEntity[$id];
+
+                $subFieldData['nid'] = $subEntity->nid;
+                $subFieldData['vid'] = $subEntity->vid;
+                $subFieldData['title'] = $subEntity->title;
+                $subFieldData['created'] = $subEntity->created;
+                $subFieldData['changed'] = $subEntity->changed;
                 
                 foreach ($subFields AS $subField) {
                   eval("\$subFieldData['$subField']['$subEntity->title']=" . '$subEntity->' . $subField . "[LANGUAGE_NONE][0][value];");
