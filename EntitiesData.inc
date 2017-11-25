@@ -55,9 +55,9 @@ class EntitiesData {
         
         if($elements[1] == 'NULL'){
           $value = 'value';
-          $fieldConditions .= "->fieldCondition('field_$fieldName', '$value', '$fieldValue', '$operator')";
+          $fieldConditions .= "->fieldCondition('$fieldName', '$value', '$fieldValue', '$operator')";
         }else {
-          $fieldConditions .= "->fieldCondition('field_$fieldName', '$value', '$fieldValue', '$operator')";
+          $fieldConditions .= "->fieldCondition('$fieldName', '$value', '$fieldValue', '$operator')";
         }
         
       }
@@ -82,17 +82,16 @@ class EntitiesData {
         $fieldData['title'] = $entity->title;
         
         foreach ($fields AS $field) {
-          $posIni = strpos($field, '('); 
-          if ( $posIni > 0 ) { //entitie
+          $posIni = strpos($field, '(');
+          if ( $posIni > 0 ) { //entity
             $posEnd = strpos($field, ')');
             $subFields = substr($field, $posIni+1, $posEnd-$posIni-1);
-            $field = substr($field, 0, $posIni); 
+            $field = substr($field, 0, $posIni);
           }
-          
-          eval("\$fieldData['$field']=" . '$entity->field_' . $field . "[LANGUAGE_NONE][0][value];");
+          eval("\$fieldData['$field']=" . '$entity->' . $field . "[LANGUAGE_NONE][0][value];");
           
           if ($fieldData["$field"] == NULL) {
-            eval("\$fieldData['$field']=" . '$entity->field_' . $field . "[und];");
+            eval("\$fieldData['$field']=" . '$entity->' . $field . "[und];");
             
             $areEntities = FALSE;
             if ($fieldData["$field"] != NULL) { //Entities
@@ -106,7 +105,7 @@ class EntitiesData {
                 $subEntity = $subEntity[$id];
                 
                 foreach ($subFields AS $subField) {
-                  eval("\$subFieldData['$subField']['$subEntity->title']=" . '$subEntity->field_' . $subField . "[LANGUAGE_NONE][0][value];");
+                  eval("\$subFieldData['$subField']['$subEntity->title']=" . '$subEntity->' . $subField . "[LANGUAGE_NONE][0][value];");
                 }
                 
                 $object =  array();
@@ -160,9 +159,9 @@ class EntitiesData {
         
         if ($pos > 0) { // is a field
           $fieldValue = substr($fieldValues[$i], $pos+1, strlen($fieldValues[$i]));
-          eval("\$node->field_" . $fields[$i] ."['und'][0]['value'] = \$node->field_" . $fieldValue . "['und'][0]['value'];");          
+          eval("\$node->" . $fields[$i] ."['und'][0]['value'] = \$node->" . $fieldValue . "['und'][0]['value'];");
         }else {
-          eval("\$node->field_" . $fields[$i] ."['und'][0]['value'] = '" . $fieldValues[$i] . "';");
+          eval("\$node->" . $fields[$i] ."['und'][0]['value'] = '" . $fieldValues[$i] . "';");
         }        
       }
       node_save($node);
