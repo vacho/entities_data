@@ -17,7 +17,7 @@ class EntitiesData {
    * param fields
    *  string of fields such as system name (lowercase) separated by single space " "
    *  eg (field_name_1 field_name_2 ... field_name_n)
-   *  eg (field_name_1 field_name_2 ... entityName(field_name_5 field_name_6 ...) ...field_name_n) 
+   *  eg (field_name_1 ... entityName(entity_type,field_name_5 field_name_6 ...) ...field_name_n)
    * @param conditions
    *   string of conditions such as sql condition, separated by comma (,)
   */
@@ -89,8 +89,18 @@ class EntitiesData {
 
           if ( $posIni > 0 ) { //entity
             $posEnd = strpos($field, ')');
-            $subFields = substr($field, $posIni+1, $posEnd-$posIni-1);
-            $field = substr($field, 0, $posIni);
+            $posEndEntityType = strpos($field, ',');
+
+            if($posEndEntityType > 0){
+              $subFields = substr($field, $posEndEntityType+1, $posEnd-$posEndEntityType-1);
+              $subEntityType = substr($field, $posIni+1, $posEndEntityType-$posIni-1);
+              $field = substr($field, 0, $posIni);
+            }else {
+              $subFields = substr($field, $posIni+1, $posEnd-$posIni-1);
+              $subEntityType = 'node';
+              $field = substr($field, 0, $posIni);
+            }
+
           }
 
           eval("\$fieldData['$field']=" . '$entity->' . $field . "[LANGUAGE_NONE][0][value];");
@@ -103,22 +113,44 @@ class EntitiesData {
               $areEntities = TRUE;
               $subFields = explode(",", $subFields);
               foreach ($fieldData["$field"] As $row) {
-                $id = $row['target_id'];
-                $type = $field;
-                $object[$id] = (object)array( 'nid' => $id, 'vid' => $id, 'type' => "$type");
-                $subEntity = entity_load($entity_type, array_keys($object));
-                $subEntity = $subEntity[$id];
 
-                $subFieldData['nid'] = $subEntity->nid;
-                $subFieldData['vid'] = $subEntity->vid;
-                $subFieldData['title'] = $subEntity->title;
-                $subFieldData['created'] = $subEntity->created;
-                $subFieldData['changed'] = $subEntity->changed;
-                
-                foreach ($subFields AS $subField) {
-                  eval("\$subFieldData['$subField']['$subEntity->title']=" . '$subEntity->' . $subField . "[LANGUAGE_NONE][0][value];");
+                if($subEntityType == 'user') {
+                  $id = $row['target_id'];
+                  $object[$id] = (object)array( 'uid' => $id, 'type' => "user");
+
+                  $subEntity = entity_load('user', array_keys($object));
+
+                  $subEntity = $subEntity[$id];
+
+                  $subFieldData['uid'] = $subEntity->uid;
+                  $subFieldData['name'] = $subEntity->name;
+                  $subFieldData['created'] = $subEntity->created;
+                  $subFieldData['access'] = $subEntity->access;
+
+                  foreach ($subFields AS $subField) {
+                    eval("\$subFieldData['$subField']=" . '$subEntity->' . $subField . "[LANGUAGE_NONE][0][value];");
+                  }
                 }
-                
+
+                if($subEntityType == 'node') {
+
+                  $id = $row['target_id'];
+                  $type = $field;
+                  $object[$id] = (object)array( 'nid' => $id, 'vid' => $id, 'type' => "$type");
+                  $subEntity = entity_load($entity_type, array_keys($object));
+                  $subEntity = $subEntity[$id];
+
+                  $subFieldData['nid'] = $subEntity->nid;
+                  $subFieldData['vid'] = $subEntity->vid;
+                  $subFieldData['title'] = $subEntity->title;
+                  $subFieldData['created'] = $subEntity->created;
+                  $subFieldData['changed'] = $subEntity->changed;
+
+                  foreach ($subFields AS $subField) {
+                    eval("\$subFieldData['$subField']['$subEntity->title']=" . '$subEntity->' . $subField . "[LANGUAGE_NONE][0][value];");
+                  }
+                }
+
                 $object =  array();
               }              
 

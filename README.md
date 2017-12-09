@@ -8,14 +8,14 @@ The purpose of this project is to provide to  drupal programmers an easy way to 
 * Queries to 1-1 nodes entities.
 * Queries to 1-n nodes entities.
 * Set datas in a single node entity
-
+* Support node and user entities
 
 ### Usage
 Include this code in your module
 ```bash
   //example get datas from node with entity relation (address)
   $id = "12345";
-  $partner = EntitiesData::getDatas('node', 'people', "first_name last_name adress(street number)", "id=$id");
+  $partner = EntitiesData::getDatas('node', 'people', "first_name last_name adress(node,street number)", "id=$id");
   //this return a array of arrays
 
   //exmplate to set datas in a node
