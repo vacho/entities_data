@@ -38,3 +38,6 @@ Queries for set:
 Set datas into:
 * Nodes with relations
 * Other entities type
+
+### References
+https://www.drupal.org/docs/7/creating-custom-modules/howtos/how-to-use-entityfieldquery-for-drupal-7
