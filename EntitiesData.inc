@@ -2,177 +2,133 @@
 /**
  * @file
  * EntitiesData class.
-  */
+ */
 
 class EntitiesData {
-  
+
   /**
    * Implements getDatas().
    * Return entities query.
    *
    * @param entity_type
-   *   node, or other 
+   *   thats suppport node, user
    * @param bundle
-   *   article or other
-   * param fields
+   *   article for example
+   * @param fields
    *  string of fields such as system name (lowercase) separated by single space " "
    *  eg (field_name_1 field_name_2 ... field_name_n)
    *  eg (field_name_1 ... entityName(entity_type,field_name_5 field_name_6 ...) ...field_name_n)
    * @param conditions
    *   string of conditions such as sql condition, separated by comma (,)
-  */
-  public static function getDatas($entity_type, $bundle, $fields, $conditions) {
+   */
+  public static function getData($parameters) {
+
+    $entity_type = $parameters['entity_type'];
+    $bundle = $parameters['bundle'];
+    $conditions = $parameters['conditions'];
+
     $query = new EntityFieldQuery();
-    
-    if($conditions != ""){
-      
-      $conditions = explode(",", $conditions);
-      
+
+    $field_conditions = ""; $entity_conditions = ""; $property_conditions = "";
+
+    if($conditions != "") {
+      $conditions = $parameters['conditions'];
       foreach ($conditions AS $condition) {
-        $value = "value";
-        
-        if (strpos($condition, '!=') !== FALSE) {
-          $elements = explode("!=", $condition);
-          $operator =  "!=";
-        }else if (strpos($condition, '>=') !== FALSE) {
-          $elements = explode(">=", $condition);
-          $operator =  ">=";
-        }else if (strpos($condition, '<=') !== FALSE) {
-          $elements = explode("<=", $condition);
-          $operator =  "<=";
-        }else if (strpos($condition, '>') !== FALSE) {
-          $elements = explode(">", $condition);
-          $operator =  ">";
-        }else if (strpos($condition, '<') !== FALSE) {
-          $elements = explode("<", $condition);
-          $operator =  "<";
-        }else if (strpos($condition, '=') !== FALSE) {
-          $elements = explode("=", $condition);
-          $operator =  "=";
+        $field = $condition['field'];
+        $column = $condition['column'];
+        $value = $condition['value'];
+        $value_ini = $condition['value_ini'];
+        $value_end = $condition['value_end'];
+        $operator = $condition['operator'];
+        $delta_group = $condition['delta_group'];
+        $language_group = $condition['language_group'];
+
+        if($condition['type'] == 'property_condition') {
+          // ->propertyCondition($name, $value, $operator = NULL)
+          $property_conditions .= "->propertyCondition('$field', '$value_ini$value$value_end', '$operator')";
         }
-        $fieldName =  $elements[0];
-        $fieldValue = $elements[1];
-        
-        if($elements[1] == 'NULL'){
-          $value = 'value';
-          $fieldConditions .= "->fieldCondition('$fieldName', '$value', '$fieldValue', '$operator')";
-        }else {
-          $fieldConditions .= "->fieldCondition('$fieldName', '$value', '$fieldValue', '$operator')";
+        else if($condition['type'] == 'field_condition') {
+          // ->fieldCondition($field, $column = NULL, $value = NULL, $operator = NULL, $delta_group = NULL, $language_group = NULL)
+          $field_conditions .= "->fieldCondition('$field', '$column', '$value_ini$value$value_end', '$operator')";
         }
-        
+        else if($condition['type'] == 'entity_condition') {
+          // ->entityCondition($name, $value, $operator = NULL)
+          $entity_conditions .= "->entityCondition('$field', $value, '$operator')";
+        }
+
+
       }
     }
-    
-    $composition = '$query->entityCondition' . "('entity_type', '$entity_type')
-    ->entityCondition('bundle', '$bundle')
-    $fieldConditions
-    ->execute();
+
+    // GET all instances of entity_type, bundle for field conditions
+    $composition = '
+      $query
+        ->entityCondition' . "('entity_type', '$entity_type')
+        ->entityCondition('bundle', '$bundle')
+        $property_conditions
+        $field_conditions
+        $entity_conditions
+        ->execute();
     ";
-    
-    eval("\$entitiesInstances=$composition;");
-    
-    if (sizeof($entitiesInstances) > 0) {
-      $entities = entity_load($entity_type, array_keys($entitiesInstances[$entity_type]));
-      
-      $fields = explode(" ", $fields);
+    //dd($composition);
+
+    $entities = NULL;
+    eval("\$entities=$composition;");
+
+    if (sizeof($entities) > 0) {
+      $entities = entity_load($entity_type, array_keys($entities[$entity_type]));
+
+      // GET all field data
       foreach ($entities as $entity) {
-        $fieldData = array();
+        $field_data = array();
 
-        $fieldData['nid'] = $entity->nid;
-        $fieldData['vid'] = $entity->vid;
-        $fieldData['title'] = $entity->title;
-        $fieldData['created'] = $entity->created;
-        $fieldData['changed'] = $entity->changed;
-        
-        foreach ($fields AS $field) {
-          $posIni = strpos($field, '(');
+        $field_data['nid'] = $entity->nid;
+        $field_data['vid'] = $entity->vid;
+        $field_data['title'] = $entity->title;
+        $field_data['created'] = $entity->created;
+        $field_data['changed'] = $entity->changed;
 
-          if ( $posIni > 0 ) { //entity
-            $posEnd = strpos($field, ')');
-            $posEndEntityType = strpos($field, ',');
+        foreach ($parameters['fields'] AS $field) {
 
-            if($posEndEntityType > 0){
-              $subFields = substr($field, $posEndEntityType+1, $posEnd-$posEndEntityType-1);
-              $subEntityType = substr($field, $posIni+1, $posEndEntityType-$posIni-1);
-              $field = substr($field, 0, $posIni);
-            }else {
-              $subFields = substr($field, $posIni+1, $posEnd-$posIni-1);
-              $subEntityType = 'node';
-              $field = substr($field, 0, $posIni);
-            }
+          $is_entity = is_array($field);
+          $conditions_to_send = array();
+
+          if ( $is_entity ) { // SUB ENTITY
+            $entity_id = 0;
+            $sss = '$entity->'. $field['field'] . "[und][0]['target_id']";
+            eval("\$entity_id=$sss;");
+
+            $conditions_to_send[] = array(
+              'type' => 'entity_condition',
+              'field' => 'entity_id',
+              'value' => $entity_id,
+              'operator' => '='
+            );
+            $params = array(
+              'entity_type' => $field['entity_type'],
+              'bundle' => $field['bundle'],
+              'fields' => $field['fields'],
+              'conditions' => $conditions_to_send
+            );
+            $field_name = $field['field'];
+
+            $field_data["$field_name"] = self::getData($params);
 
           }
-
-          eval("\$fieldData['$field']=" . '$entity->' . $field . "[LANGUAGE_NONE][0][value];");
-          
-          if ($fieldData["$field"] == NULL) {
-            eval("\$fieldData['$field']=" . '$entity->' . $field . "[und];");
-            
-            $areEntities = FALSE;
-            if ($fieldData["$field"] != NULL) { //Entities
-              $areEntities = TRUE;
-              $subFields = explode(",", $subFields);
-              foreach ($fieldData["$field"] As $row) {
-
-                if($subEntityType == 'user') {
-                  $id = $row['target_id'];
-                  $object[$id] = (object)array( 'uid' => $id, 'type' => "user");
-
-                  $subEntity = entity_load('user', array_keys($object));
-
-                  $subEntity = $subEntity[$id];
-
-                  $subFieldData['uid'] = $subEntity->uid;
-                  $subFieldData['name'] = $subEntity->name;
-                  $subFieldData['created'] = $subEntity->created;
-                  $subFieldData['access'] = $subEntity->access;
-
-                  foreach ($subFields AS $subField) {
-                    eval("\$subFieldData['$subField']=" . '$subEntity->' . $subField . "[LANGUAGE_NONE][0][value];");
-                  }
-                }
-
-                if($subEntityType == 'node') {
-
-                  $id = $row['target_id'];
-                  $type = $field;
-                  $object[$id] = (object)array( 'nid' => $id, 'vid' => $id, 'type' => "$type");
-                  $subEntity = entity_load($entity_type, array_keys($object));
-                  $subEntity = $subEntity[$id];
-
-                  $subFieldData['nid'] = $subEntity->nid;
-                  $subFieldData['vid'] = $subEntity->vid;
-                  $subFieldData['title'] = $subEntity->title;
-                  $subFieldData['created'] = $subEntity->created;
-                  $subFieldData['changed'] = $subEntity->changed;
-
-                  foreach ($subFields AS $subField) {
-                    eval("\$subFieldData['$subField']['$subEntity->title']=" . '$subEntity->' . $subField . "[LANGUAGE_NONE][0][value];");
-                  }
-                }
-
-                $object =  array();
-              }              
-
-            }
-            
-            if ($areEntities) {
-              $fieldData["$field"] = $subFieldData;
-              $subFieldData = array();
-            }
-            
+          else { // FIELD
+            $field_name = $field;
+            eval("\$field_data['$field_name']=" . '$entity->' . $field_name . "[LANGUAGE_NONE][0][value];");
           }
-        
         }
-        $datas[] = $fieldData;
+        $data[] = $field_data;
       }
-    
+
     }
     else {
-      $datas = NULL;
+      $data = NULL;
     }
-      
-    return $datas;
+
+    return $data;
   }
 
   /**
@@ -192,20 +148,20 @@ class EntitiesData {
   public static function setDatas($entity_type, $entity_id, $fields, $fields_values) {
     if($entity_type == "node") {
       $node = node_load($entity_id);
-      
+
       $fields = explode(",", $fields);
       $fieldValues = explode(",", $fields_values);
-      
+
       for ($i = 0; $i < count($fields); $i++) {
-        
+
         $pos = strpos($fieldValues[$i], '_');
-        
+
         if ($pos > 0) { // is a field
           $fieldValue = substr($fieldValues[$i], $pos+1, strlen($fieldValues[$i]));
           eval("\$node->" . $fields[$i] ."['und'][0]['value'] = \$node->" . $fieldValue . "['und'][0]['value'];");
         }else {
           eval("\$node->" . $fields[$i] ."['und'][0]['value'] = '" . $fieldValues[$i] . "';");
-        }        
+        }
       }
       node_save($node);
     }

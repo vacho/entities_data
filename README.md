@@ -15,7 +15,7 @@ Include this code in your module
 ```bash
   //example get datas from node with entity relation (address)
   $id = "12345";
-  $partner = EntitiesData::getDatas('node', 'people', "first_name last_name adress(node,street number)", "id=$id");
+  $partner = EntitiesData::getData('node', 'people', "first_name last_name adress(node,street number)", "id=$id");
   //this return a array of arrays
 
   //exmplate to set datas in a node
