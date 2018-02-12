@@ -45,7 +45,11 @@ class EntitiesData {
 
         if($condition['type'] == 'property_condition') {
           // ->propertyCondition($name, $value, $operator = NULL)
-          $property_conditions .= "->propertyCondition('$field', '$value_ini$value$value_end', '$operator')";
+          if($operator == 'BETWEEN') {
+            $property_conditions .= "->propertyCondition('$field', array($value_ini, $value_end), '$operator')";
+          } else {
+            $property_conditions .= "->propertyCondition('$field', '$value_ini$value$value_end', '$operator')";
+          }
         }
         else if($condition['type'] == 'field_condition') {
           // ->fieldCondition($field, $column = NULL, $value = NULL, $operator = NULL, $delta_group = NULL, $language_group = NULL)
@@ -55,8 +59,6 @@ class EntitiesData {
           // ->entityCondition($name, $value, $operator = NULL)
           $entity_conditions .= "->entityCondition('$field', $value, '$operator')";
         }
-
-
       }
     }
 
@@ -70,7 +72,6 @@ class EntitiesData {
         $entity_conditions
         ->execute();
     ";
-    //dd($composition);
 
     $entities = NULL;
     eval("\$entities=$composition;");
@@ -127,6 +128,8 @@ class EntitiesData {
     else {
       $data = NULL;
     }
+
+    //dd($data);
 
     return $data;
   }
