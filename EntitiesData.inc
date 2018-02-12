@@ -31,6 +31,10 @@ class EntitiesData {
 
     $field_conditions = ""; $entity_conditions = ""; $property_conditions = "";
 
+    if(!empty($bundle)) {
+      $bundle_condition = "->entityCondition('bundle', '$bundle')";
+    }
+
     if($conditions != "") {
       $conditions = $parameters['conditions'];
       foreach ($conditions AS $condition) {
@@ -66,7 +70,7 @@ class EntitiesData {
     $composition = '
       $query
         ->entityCondition' . "('entity_type', '$entity_type')
-        ->entityCondition('bundle', '$bundle')
+        $bundle_condition
         $property_conditions
         $field_conditions
         $entity_conditions
@@ -83,11 +87,18 @@ class EntitiesData {
       foreach ($entities as $entity) {
         $field_data = array();
 
-        $field_data['nid'] = $entity->nid;
-        $field_data['vid'] = $entity->vid;
-        $field_data['title'] = $entity->title;
+        if($entity_type == 'node') {
+          $field_data['nid'] = $entity->nid;
+          $field_data['vid'] = $entity->vid;
+          $field_data['title'] = $entity->title;
+          $field_data['changed'] = $entity->changed;
+        }
+        if($entity_type == 'user') {
+          $field_data['name'] = $entity->name;
+          $field_data['mail'] = $entity->mail;
+        }
+
         $field_data['created'] = $entity->created;
-        $field_data['changed'] = $entity->changed;
 
         foreach ($parameters['fields'] AS $field) {
 
